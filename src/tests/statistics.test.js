@@ -77,6 +77,25 @@ describe('Storage & Statistics', () => {
     expect(allRecordsAfter[todayKey].totalCount).toBe(1);
   });
 
+  it('prevents counting the same video twice on rapid duplicate calls or identical encounterId', async () => {
+    // 1. Call with identical videoId immediately
+    await recordEncounter(PLATFORMS.YOUTUBE, 'short-duplicate-test');
+    await recordEncounter(PLATFORMS.YOUTUBE, 'short-duplicate-test');
+
+    let today = await getTodayRecord();
+    expect(today.youtubeCount).toBe(1);
+    expect(today.totalCount).toBe(1);
+
+    // 2. Call with identical encounterId
+    const customEncounterId = 'custom_encounter_xyz';
+    await recordEncounter(PLATFORMS.INSTAGRAM, 'reel-enc-1', customEncounterId);
+    await recordEncounter(PLATFORMS.INSTAGRAM, 'reel-enc-1', customEncounterId);
+
+    today = await getTodayRecord();
+    expect(today.instagramCount).toBe(1);
+    expect(today.totalCount).toBe(2);
+  });
+
   it('clears all statistics while retaining user settings', async () => {
     // Save custom settings
     await saveSettings({ dailyGoal: 150, qualificationSeconds: 3 });
@@ -99,3 +118,4 @@ describe('Storage & Statistics', () => {
     expect(settings.qualificationSeconds).toBe(3);
   });
 });
+

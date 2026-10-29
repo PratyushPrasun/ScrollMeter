@@ -35,3 +35,4 @@ export async function sendRuntimeMessage(message) {
     return null;
   }
 }
+

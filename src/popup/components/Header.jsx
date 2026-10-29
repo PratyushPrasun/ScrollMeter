@@ -53,3 +53,4 @@ export default function Header({ trackingEnabled, onToggleTracking }) {
     </header>
   );
 }
+

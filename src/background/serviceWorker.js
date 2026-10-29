@@ -73,8 +73,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       }
 
       case MESSAGE_TYPES.RECORD_QUALIFIED_ENCOUNTER: {
-        const { platform, videoId } = message.payload;
-        const updated = await recordEncounter(platform, videoId);
+        const { platform, videoId, encounterId } = message.payload;
+        const updated = await recordEncounter(platform, videoId, encounterId);
         await updateBadge();
         await broadcastMessage({
           type: MESSAGE_TYPES.STATS_UPDATED,

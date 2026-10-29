@@ -49,11 +49,14 @@ describe('TrackingEngine Counting Rules', () => {
     // Advance to 2000ms
     engine.tick(startTime + 2000);
     expect(qualifyCallback).toHaveBeenCalledTimes(1);
-    expect(qualifyCallback).toHaveBeenCalledWith({
-      platform: PLATFORMS.YOUTUBE,
-      videoId: 'video-1',
-      timestamp: expect.any(Number),
-    });
+    expect(qualifyCallback).toHaveBeenCalledWith(
+      expect.objectContaining({
+        platform: PLATFORMS.YOUTUBE,
+        videoId: 'video-1',
+        encounterId: expect.any(String),
+        timestamp: expect.any(Number),
+      })
+    );
     expect(engine.candidate.hasQualified).toBe(true);
   });
 
@@ -168,3 +171,4 @@ describe('TrackingEngine Counting Rules', () => {
     expect(qualifyCallback).not.toHaveBeenCalled();
   });
 });
+

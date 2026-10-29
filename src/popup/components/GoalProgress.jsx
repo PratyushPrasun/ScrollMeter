@@ -46,3 +46,4 @@ export default function GoalProgress({ totalCount = 0, dailyGoal = 100 }) {
     </div>
   );
 }
+

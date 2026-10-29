@@ -113,16 +113,26 @@ export class ContentTrackerCoordinator {
   async handleQualifiedVideo(candidateData) {
     try {
       // 1. Send to background service worker
-      await sendRuntimeMessage({
+      const response = await sendRuntimeMessage({
         type: MESSAGE_TYPES.RECORD_QUALIFIED_ENCOUNTER,
         payload: {
           platform: this.platform,
           videoId: candidateData.videoId,
+          encounterId: candidateData.encounterId,
         },
       });
 
-      // 2. Direct fallback to chrome.storage if service worker is sleeping
-      this.stats = await recordEncounter(this.platform, candidateData.videoId);
+      if (response && response.stats) {
+        this.stats = response.stats;
+      } else {
+        // 2. Fallback only if service worker was unavailable or didn't respond
+        this.stats = await recordEncounter(
+          this.platform,
+          candidateData.videoId,
+          candidateData.encounterId
+        );
+      }
+
       this.floatingCounter?.update(this.stats, this.settings, this.engine.getStatus());
     } catch (err) {
       console.warn('[ScrollMeter] Error recording qualified encounter:', err);
@@ -131,13 +141,18 @@ export class ContentTrackerCoordinator {
 
   async handlePlaybackTick(platform, seconds) {
     try {
-      await sendRuntimeMessage({
+      const response = await sendRuntimeMessage({
         type: MESSAGE_TYPES.RECORD_PLAYBACK_TICK,
         payload: { platform, seconds },
       });
 
-      // Accumulate into storage
-      this.stats = await recordPlaybackTime(platform, seconds);
+      if (response && response.stats) {
+        this.stats = response.stats;
+      } else {
+        // Fallback only if service worker was unavailable
+        this.stats = await recordPlaybackTime(platform, seconds);
+      }
+
       this.floatingCounter?.update(this.stats, this.settings, this.engine.getStatus());
     } catch (err) {
       // Ignore
@@ -186,3 +201,4 @@ export class ContentTrackerCoordinator {
     this.floatingCounter?.destroy();
   }
 }
+

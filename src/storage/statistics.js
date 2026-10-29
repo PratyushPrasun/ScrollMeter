@@ -74,12 +74,36 @@ export async function getTodayRecord() {
 }
 
 /**
- * Record a qualified video encounter
+ * Record a qualified video encounter with robust deduplication
  */
-export async function recordEncounter(platform, videoId) {
+export async function recordEncounter(platform, videoId, encounterId = null) {
+  if (!videoId) return null;
+
   const todayDateStr = getLocalDateString();
   const dailyRecords = await getAllDailyRecords();
   const today = dailyRecords[todayDateStr] || createEmptyDailyRecord(todayDateStr);
+
+  if (!Array.isArray(today.recentEncounters)) {
+    today.recentEncounters = [];
+  }
+
+  const now = Date.now();
+
+  // 1. Deduplication by explicit encounterId if provided
+  if (encounterId) {
+    const alreadyRecorded = today.recentEncounters.find((e) => e.encounterId === encounterId);
+    if (alreadyRecorded) {
+      return today;
+    }
+  }
+
+  // 2. Fallback deduplication: prevent identical video counted twice within 5 seconds
+  const recentDuplicate = today.recentEncounters.find(
+    (e) => e.videoId === videoId && e.platform === platform && now - e.timestamp < 5000
+  );
+  if (recentDuplicate) {
+    return today;
+  }
 
   if (platform === PLATFORMS.INSTAGRAM) {
     today.instagramCount = (today.instagramCount || 0) + 1;
@@ -88,17 +112,15 @@ export async function recordEncounter(platform, videoId) {
   }
 
   today.totalCount = (today.instagramCount || 0) + (today.youtubeCount || 0);
-  today.lastUpdated = Date.now();
+  today.lastUpdated = now;
 
-  // Keep a small bounded list of recent encounters
-  if (!Array.isArray(today.recentEncounters)) {
-    today.recentEncounters = [];
-  }
   today.recentEncounters.unshift({
     platform,
     videoId,
-    timestamp: Date.now(),
+    encounterId: encounterId || `${platform}_${videoId}_${now}`,
+    timestamp: now,
   });
+
   if (today.recentEncounters.length > 100) {
     today.recentEncounters.length = 100;
   }
@@ -145,3 +167,4 @@ export async function resetAllStatistics() {
   await setStorageItem(STORAGE_KEYS.DAILY_RECORDS, dailyRecords);
   return freshRecord;
 }
+

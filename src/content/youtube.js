@@ -202,5 +202,8 @@ class YouTubeShortsAdapter {
   }
 }
 
-// Instantiate adapter when script executes
-new YouTubeShortsAdapter();
+// Only instantiate once in top-level browsing window
+if (typeof window !== 'undefined' && window === window.top && !window.__SCROLLMETER_YT_INITIALIZED__) {
+  window.__SCROLLMETER_YT_INITIALIZED__ = true;
+  new YouTubeShortsAdapter();
+}

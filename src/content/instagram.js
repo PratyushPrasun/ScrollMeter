@@ -167,9 +167,13 @@ class InstagramReelsAdapter {
       }
     }
 
-    // Fallback ID if still not found: use video source or data attribute
+    // Fallback ID if still not found: use stable element identifier (never currentTime!)
     if (!reelId && videoEl) {
-      reelId = videoEl.getAttribute('src')?.slice(0, 32) || `ig-reel-${videoEl.currentTime || 0}`;
+      if (!videoEl.__scrollmeter_id) {
+        const srcSnippet = videoEl.getAttribute('src')?.slice(0, 32);
+        videoEl.__scrollmeter_id = srcSnippet || `ig-reel-${Math.random().toString(36).slice(2, 9)}`;
+      }
+      reelId = videoEl.__scrollmeter_id;
     }
 
     if (reelId && reelId !== this.currentReelId) {
@@ -231,5 +235,8 @@ class InstagramReelsAdapter {
   }
 }
 
-// Instantiate adapter when script executes
-new InstagramReelsAdapter();
+// Only instantiate once in top-level browsing window
+if (typeof window !== 'undefined' && window === window.top && !window.__SCROLLMETER_IG_INITIALIZED__) {
+  window.__SCROLLMETER_IG_INITIALIZED__ = true;
+  new InstagramReelsAdapter();
+}

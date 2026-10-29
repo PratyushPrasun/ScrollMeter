@@ -97,3 +97,4 @@ export async function saveSettings(partialSettings) {
   await setStorageItem(STORAGE_KEYS.SETTINGS, updated);
   return updated;
 }
+

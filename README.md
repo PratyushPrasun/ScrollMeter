@@ -148,3 +148,4 @@ This generates the extension files inside the `dist/` directory.
 - **DOM Structure Changes**: Instagram and YouTube frequently update their CSS class names and internal React/Polymer component wrappers. The extension prioritizes stable URL patterns (`/shorts/{id}`, `/reel/{code}`), `<video>` DOM playback events (`playing`, `pause`), and standard `IntersectionObserver` signals to insulate itself against internal class name churn.
 - **Picture-in-Picture (PiP) and Miniplayer**: If a video plays in a miniplayer window outside the primary feed container, it may not register as feed scrolling.
 - **Mobile Web Versions**: The extension is built for desktop web feeds (`https://www.instagram.com/reels` and `https://www.youtube.com/shorts/`) and does not monitor native mobile apps.
+

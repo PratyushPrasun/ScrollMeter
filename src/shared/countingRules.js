@@ -70,7 +70,10 @@ export class TrackingEngine {
     const isRevisitTooSoon =
       lastQualifiedTime && now - lastQualifiedTime < this.revisitCooldownSeconds * 1000;
 
+    const encounterId = `${this.platform}_${videoId}_${now}`;
+
     this.candidate = {
+      id: encounterId,
       videoId,
       platform: this.platform,
       startedAt: now,
@@ -181,6 +184,7 @@ export class TrackingEngine {
     this.onQualify({
       platform: this.platform,
       videoId: this.candidate.videoId,
+      encounterId: this.candidate.id,
       timestamp: Date.now(),
     });
 
@@ -217,3 +221,4 @@ export class TrackingEngine {
     };
   }
 }
+
