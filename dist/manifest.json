@@ -1,0 +1,74 @@
+{
+  "manifest_version": 3,
+  "name": "ScrollMeter - Reels & Shorts Counter",
+  "version": "1.0.0",
+  "description": "Track Instagram Reels and YouTube Shorts encountered with active viewing time, daily limits, and floating counter.",
+  "action": {
+    "default_popup": "src/popup/index.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "background": {
+    "service_worker": "service-worker-loader.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "assets/instagram.js-loader-CLqoRrq_.js"
+      ],
+      "matches": [
+        "https://www.instagram.com/*"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "js": [
+        "assets/youtube.js-loader-Y12rCK3S.js"
+      ],
+      "matches": [
+        "https://www.youtube.com/*"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://www.instagram.com/*",
+    "https://www.youtube.com/*"
+  ],
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "https://www.instagram.com/*"
+      ],
+      "resources": [
+        "assets/statistics-DnJArswa.js",
+        "assets/tracker-q7dJ4CzJ.js",
+        "assets/src-content-instagram.js-C4iZtmsj.js"
+      ],
+      "use_dynamic_url": false
+    },
+    {
+      "matches": [
+        "https://www.youtube.com/*"
+      ],
+      "resources": [
+        "assets/statistics-DnJArswa.js",
+        "assets/tracker-q7dJ4CzJ.js",
+        "assets/src-content-youtube.js-B-KZt1Tw.js"
+      ],
+      "use_dynamic_url": false
+    }
+  ]
+}
