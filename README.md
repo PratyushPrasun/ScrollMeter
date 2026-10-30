@@ -304,4 +304,4 @@ ScrollMeter was created under a strict **Zero-Data-Collection Principle**:
 
 ## 📄 License
 
-Distributed under the [MIT License](LICENSE). You are free to modify, distribute, and use this project for personal purposes.
+Distributed under the [MIT License](LICENSE). You are free to modify, distribute, and use this project only for personal purposes.
